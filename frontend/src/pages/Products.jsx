@@ -27,21 +27,20 @@ function Products() {
     });
   };
 
-  // EXPORT CSV
   const exportCSV = () => {
 
     const headers = ["Name", "SKU", "Price", "Stock"];
 
-    const rows = products.map(product => [
-      product.name,
-      product.sku,
-      product.price,
-      product.stock
+    const rows = products.map(p => [
+      p.name,
+      p.sku,
+      p.price,
+      p.stock
     ]);
 
     const csvContent =
       [headers, ...rows]
-        .map(row => row.join(","))
+        .map(r => r.join(","))
         .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -51,82 +50,60 @@ function Products() {
 
     link.setAttribute("href", url);
     link.setAttribute("download", "products.csv");
-
     link.click();
   };
 
-  // ADD OR UPDATE PRODUCT
   const addProduct = () => {
 
     if (editIndex !== null) {
 
-      const updatedProducts = [...products];
-      updatedProducts[editIndex] = newProduct;
-
-      setProducts(updatedProducts);
+      const updated = [...products];
+      updated[editIndex] = newProduct;
+      setProducts(updated);
       setEditIndex(null);
 
     } else {
 
-      const product = {
+      setProducts([...products, {
         id: products.length + 1,
         ...newProduct
-      };
-
-      setProducts([...products, product]);
+      }]);
 
     }
 
-    setNewProduct({
-      name: "",
-      sku: "",
-      price: "",
-      stock: ""
-    });
-
+    setNewProduct({ name:"", sku:"", price:"", stock:"" });
     setShowForm(false);
   };
 
-  // DELETE PRODUCT
   const deleteProduct = (index) => {
-
-    const updatedProducts = products.filter((_, i) => i !== index);
-    setProducts(updatedProducts);
-
+    setProducts(products.filter((_, i) => i !== index));
   };
 
-  // EDIT PRODUCT
   const editProduct = (index) => {
-
-    const product = products[index];
-
-    setNewProduct(product);
+    setNewProduct(products[index]);
     setEditIndex(index);
     setShowForm(true);
-
   };
 
   return (
-    <div>
+    <div className="space-y-6">
 
-      <h1 className="text-3xl font-bold mb-6">Products</h1>
+      <h1 className="text-3xl font-bold">Products</h1>
 
-      {/* SEARCH + SORT + ACTIONS */}
-
-      <div className="flex gap-4 mb-4">
+      {/* Controls */}
+      <div className="flex gap-4">
 
         <input
-          type="text"
           placeholder="Search product..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border p-2 rounded w-64"
+          onChange={(e)=>setSearch(e.target.value)}
+          className="border rounded p-2 w-60"
         />
 
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="border p-2 rounded"
+          onChange={(e)=>setSortBy(e.target.value)}
+          className="border rounded p-2"
         >
           <option value="">Sort By</option>
           <option value="name">Name</option>
@@ -135,10 +112,7 @@ function Products() {
         </select>
 
         <button
-          onClick={() => {
-            setShowForm(true);
-            setEditIndex(null);
-          }}
+          onClick={()=>{setShowForm(true);setEditIndex(null)}}
           className="bg-blue-600 text-white px-4 py-2 rounded"
         >
           + Add Product
@@ -153,70 +127,48 @@ function Products() {
 
       </div>
 
-
-      {/* Product Form */}
-
+      {/* Form */}
       {showForm && (
-
-        <div className="bg-white p-6 rounded shadow-md mb-6 w-96">
+        <div className="bg-white p-6 rounded-xl shadow w-96">
 
           <h2 className="text-xl font-semibold mb-4">
             {editIndex !== null ? "Edit Product" : "Add Product"}
           </h2>
 
-          <input
-            type="text"
-            name="name"
-            placeholder="Product Name"
+          <input name="name" placeholder="Product Name"
             value={newProduct.name}
             onChange={handleChange}
-            className="border p-2 w-full mb-3"
-          />
+            className="border p-2 w-full mb-3"/>
 
-          <input
-            type="text"
-            name="sku"
-            placeholder="SKU"
+          <input name="sku" placeholder="SKU"
             value={newProduct.sku}
             onChange={handleChange}
-            className="border p-2 w-full mb-3"
-          />
+            className="border p-2 w-full mb-3"/>
 
-          <input
-            type="number"
-            name="price"
-            placeholder="Price"
+          <input name="price" type="number" placeholder="Price"
             value={newProduct.price}
             onChange={handleChange}
-            className="border p-2 w-full mb-3"
-          />
+            className="border p-2 w-full mb-3"/>
 
-          <input
-            type="number"
-            name="stock"
-            placeholder="Stock"
+          <input name="stock" type="number" placeholder="Stock"
             value={newProduct.stock}
             onChange={handleChange}
-            className="border p-2 w-full mb-4"
-          />
+            className="border p-2 w-full mb-4"/>
 
           <button
             onClick={addProduct}
             className="bg-green-600 text-white px-4 py-2 rounded"
           >
-            {editIndex !== null ? "Update Product" : "Save Product"}
+            Save Product
           </button>
 
         </div>
-
       )}
 
+      {/* Table */}
+      <table className="w-full bg-white rounded-xl shadow">
 
-      {/* Product Table */}
-
-      <table className="w-full bg-white rounded shadow">
-
-        <thead className="bg-gray-200">
+        <thead className="bg-gray-100 text-gray-700">
           <tr>
             <th className="p-3 text-left">Name</th>
             <th className="p-3 text-left">SKU</th>
@@ -229,48 +181,43 @@ function Products() {
         <tbody>
 
           {products
-            .filter((product) =>
-              product.name.toLowerCase().includes(search.toLowerCase())
-            )
-            .sort((a, b) => {
+          .filter(p=>p.name.toLowerCase().includes(search.toLowerCase()))
+          .sort((a,b)=>{
+            if(sortBy==="name") return a.name.localeCompare(b.name)
+            if(sortBy==="price") return a.price-b.price
+            if(sortBy==="stock") return a.stock-b.stock
+            return 0
+          })
+          .map((p,index)=>(
 
-              if (sortBy === "name") return a.name.localeCompare(b.name);
-              if (sortBy === "price") return a.price - b.price;
-              if (sortBy === "stock") return a.stock - b.stock;
+            <tr key={p.id} className="border-t hover:bg-gray-50">
 
-              return 0;
+              <td className="p-3">{p.name}</td>
+              <td className="p-3">{p.sku}</td>
+              <td className="p-3">₹{p.price}</td>
+              <td className="p-3">{p.stock}</td>
 
-            })
-            .map((product, index) => (
+              <td className="p-3 flex gap-2">
 
-              <tr key={product.id} className="border-t">
+                <button
+                  onClick={()=>editProduct(index)}
+                  className="bg-yellow-500 text-white px-3 py-1 rounded"
+                >
+                  Edit
+                </button>
 
-                <td className="p-3">{product.name}</td>
-                <td className="p-3">{product.sku}</td>
-                <td className="p-3">₹{product.price}</td>
-                <td className="p-3">{product.stock}</td>
+                <button
+                  onClick={()=>deleteProduct(index)}
+                  className="bg-red-600 text-white px-3 py-1 rounded"
+                >
+                  Delete
+                </button>
 
-                <td className="p-3">
+              </td>
 
-                  <button
-                    onClick={() => editProduct(index)}
-                    className="bg-yellow-500 text-white px-3 py-1 mr-2 rounded"
-                  >
-                    Edit
-                  </button>
+            </tr>
 
-                  <button
-                    onClick={() => deleteProduct(index)}
-                    className="bg-red-600 text-white px-3 py-1 rounded"
-                  >
-                    Delete
-                  </button>
-
-                </td>
-
-              </tr>
-
-            ))}
+          ))}
 
         </tbody>
 

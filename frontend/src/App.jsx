@@ -1,3 +1,5 @@
+import { Routes, Route, Navigate } from "react-router-dom";
+
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 
@@ -9,41 +11,77 @@ import Transfers from "./pages/Transfers";
 import Adjustments from "./pages/Adjustments";
 import MoveHistory from "./pages/MoveHistory";
 
-import { Routes, Route } from "react-router-dom";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
 
 function App() {
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
   return (
-    <div className="flex h-screen">
 
-      {/* Sidebar */}
-      <Sidebar />
+    <Routes>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col bg-gray-100">
+      {/* LOGIN */}
 
-        {/* Navbar */}
-        <Navbar />
+      <Route
+        path="/login"
+        element={!user ? <Login /> : <Navigate to="/login" />}
+      />
 
-        {/* Page Content */}
-        <div className="p-6 overflow-auto">
+      {/* REGISTER */}
 
-          <Routes>
+      <Route
+        path="/register"
+        element={!user ? <Register /> : <Navigate to="/" />}
+      />
 
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/receipts" element={<Receipts />} />
-            <Route path="/deliveries" element={<Deliveries />} />
-            <Route path="/transfers" element={<Transfers />} />
-            <Route path="/adjustments" element={<Adjustments />} />
-            <Route path="/history" element={<MoveHistory />} />
+      {/* FORGOT PASSWORD */}
 
-          </Routes>
+      <Route
+        path="/forgot-password"
+        element={<ForgotPassword />}
+      />
 
-        </div>
+      {/* DASHBOARD */}
 
-      </div>
+      <Route
+        path="/"
+        element={
+          user ? (
+            <div className="flex h-screen">
 
-    </div>
+              <Sidebar />
+
+              <div className="flex-1 flex flex-col bg-gray-100">
+
+                <Navbar />
+
+                <div className="p-6 overflow-auto">
+                  <Dashboard />
+                </div>
+
+              </div>
+
+            </div>
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+
+      {/* OTHER PAGES */}
+
+      <Route path="/products" element={user ? <Products /> : <Navigate to="/login" />} />
+      <Route path="/receipts" element={user ? <Receipts /> : <Navigate to="/login" />} />
+      <Route path="/deliveries" element={user ? <Deliveries /> : <Navigate to="/login" />} />
+      <Route path="/transfers" element={user ? <Transfers /> : <Navigate to="/login" />} />
+      <Route path="/adjustments" element={user ? <Adjustments /> : <Navigate to="/login" />} />
+      <Route path="/move-history" element={user ? <MoveHistory /> : <Navigate to="/login" />} />
+
+    </Routes>
+
   );
 }
 

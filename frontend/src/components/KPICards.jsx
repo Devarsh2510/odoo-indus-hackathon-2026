@@ -12,7 +12,7 @@ function KPICards({ products = [], deliveries = [], receipts = [] }) {
     { title: "Total Products", value: totalProducts },
     { title: "Low Stock Items", value: lowStock },
     { title: "Pending Receipts", value: pendingReceipts },
-    { title: "Pending Deliveries", value: pendingDeliveries },
+    { title: "Pending Deliveries", value: pendingDeliveries }
   ];
 
   return (
@@ -22,7 +22,7 @@ function KPICards({ products = [], deliveries = [], receipts = [] }) {
 
         <div
           key={index}
-          className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition"
+          className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition"
         >
 
           <h2 className="text-gray-500 text-sm mb-2">
