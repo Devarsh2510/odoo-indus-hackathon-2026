@@ -5,7 +5,7 @@ import RecentActivity from "../components/RecentActivity";
 
 function Dashboard() {
 
-  // Temporary product data (until backend is connected)
+  // Temporary product data
   const products = [
     { id: 1, name: "Steel Rod", stock: 120 },
     { id: 2, name: "Plastic Table", stock: 40 },
@@ -13,7 +13,20 @@ function Dashboard() {
     { id: 4, name: "Iron Sheet", stock: 4 }
   ];
 
-  // Temporary move history data
+  // Temporary deliveries
+  const deliveries = [
+    { id: 1, status: "Pending" },
+    { id: 2, status: "Shipped" }
+  ];
+
+  // Temporary receipts
+  const receipts = [
+    { id: 1 },
+    { id: 2 },
+    { id: 3 }
+  ];
+
+  // Move history
   const history = [
     { id: 1, product: "Steel Rod", action: "Receipt", quantity: 50, date: "2026-03-14" },
     { id: 2, product: "Steel Rod", action: "Transfer", quantity: -20, date: "2026-03-15" },
@@ -28,7 +41,11 @@ function Dashboard() {
       </h1>
 
       {/* KPI Cards */}
-      <KPICards />
+      <KPICards
+        products={products}
+        deliveries={deliveries}
+        receipts={receipts}
+      />
 
       {/* Inventory Chart */}
       <div className="mt-8">

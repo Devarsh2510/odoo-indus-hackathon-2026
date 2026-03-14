@@ -11,6 +11,7 @@ function Products() {
   const [editIndex, setEditIndex] = useState(null);
 
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("");
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -24,6 +25,34 @@ function Products() {
       ...newProduct,
       [e.target.name]: e.target.value
     });
+  };
+
+  // EXPORT CSV
+  const exportCSV = () => {
+
+    const headers = ["Name", "SKU", "Price", "Stock"];
+
+    const rows = products.map(product => [
+      product.name,
+      product.sku,
+      product.price,
+      product.stock
+    ]);
+
+    const csvContent =
+      [headers, ...rows]
+        .map(row => row.join(","))
+        .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute("href", url);
+    link.setAttribute("download", "products.csv");
+
+    link.click();
   };
 
   // ADD OR UPDATE PRODUCT
@@ -58,7 +87,6 @@ function Products() {
     setShowForm(false);
   };
 
-
   // DELETE PRODUCT
   const deleteProduct = (index) => {
 
@@ -66,7 +94,6 @@ function Products() {
     setProducts(updatedProducts);
 
   };
-
 
   // EDIT PRODUCT
   const editProduct = (index) => {
@@ -79,35 +106,52 @@ function Products() {
 
   };
 
-
   return (
     <div>
 
       <h1 className="text-3xl font-bold mb-6">Products</h1>
 
-      {/* SEARCH BAR */}
+      {/* SEARCH + SORT + ACTIONS */}
 
-      <input
-        type="text"
-        placeholder="Search product..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="border p-2 mb-4 w-64"
-      />
+      <div className="flex gap-4 mb-4">
 
+        <input
+          type="text"
+          placeholder="Search product..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border p-2 rounded w-64"
+        />
 
-      {/* Add Product Button */}
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="">Sort By</option>
+          <option value="name">Name</option>
+          <option value="price">Price</option>
+          <option value="stock">Stock</option>
+        </select>
 
-      <button
-        onClick={() => {
-          setShowForm(true);
-          setEditIndex(null);
-        }}
-        className="bg-blue-600 text-white px-4 py-2 rounded mb-4 ml-4"
-      >
-        + Add Product
-      </button>
+        <button
+          onClick={() => {
+            setShowForm(true);
+            setEditIndex(null);
+          }}
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          + Add Product
+        </button>
 
+        <button
+          onClick={exportCSV}
+          className="bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Export CSV
+        </button>
+
+      </div>
 
 
       {/* Product Form */}
@@ -168,7 +212,6 @@ function Products() {
       )}
 
 
-
       {/* Product Table */}
 
       <table className="w-full bg-white rounded shadow">
@@ -189,6 +232,15 @@ function Products() {
             .filter((product) =>
               product.name.toLowerCase().includes(search.toLowerCase())
             )
+            .sort((a, b) => {
+
+              if (sortBy === "name") return a.name.localeCompare(b.name);
+              if (sortBy === "price") return a.price - b.price;
+              if (sortBy === "stock") return a.stock - b.stock;
+
+              return 0;
+
+            })
             .map((product, index) => (
 
               <tr key={product.id} className="border-t">

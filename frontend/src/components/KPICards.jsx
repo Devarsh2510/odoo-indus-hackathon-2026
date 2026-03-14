@@ -1,10 +1,18 @@
-function KPICards() {
+function KPICards({ products = [], deliveries = [], receipts = [] }) {
+
+  const totalProducts = products.length;
+
+  const lowStock = products.filter(p => p.stock < 10).length;
+
+  const pendingDeliveries = deliveries.filter(d => d.status === "Pending").length;
+
+  const pendingReceipts = receipts.length;
 
   const cards = [
-    { title: "Total Products", value: 120 },
-    { title: "Low Stock Items", value: 8 },
-    { title: "Pending Receipts", value: 5 },
-    { title: "Pending Deliveries", value: 6 },
+    { title: "Total Products", value: totalProducts },
+    { title: "Low Stock Items", value: lowStock },
+    { title: "Pending Receipts", value: pendingReceipts },
+    { title: "Pending Deliveries", value: pendingDeliveries },
   ];
 
   return (
