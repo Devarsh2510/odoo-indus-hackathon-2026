@@ -1,44 +1,134 @@
+import { useState } from "react";
+
 function Adjustments() {
 
-  const adjustments = [
-    { id: 1, product: "Steel Rod", oldStock: 100, newStock: 97, reason: "Damaged" },
-    { id: 2, product: "Plastic Table", oldStock: 40, newStock: 42, reason: "Stock Correction" },
-  ];
+  const [adjustments, setAdjustments] = useState([]);
+
+  const [formData, setFormData] = useState({
+    product: "",
+    oldStock: "",
+    newStock: "",
+    reason: ""
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const addAdjustment = () => {
+
+    const adjustment = {
+      id: adjustments.length + 1,
+      ...formData
+    };
+
+    setAdjustments([...adjustments, adjustment]);
+
+    setFormData({
+      product: "",
+      oldStock: "",
+      newStock: "",
+      reason: ""
+    });
+
+  };
 
   return (
     <div>
 
-      <h1 className="text-3xl font-bold mb-6">Stock Adjustments</h1>
+      <h1 className="text-3xl font-bold mb-6">
+        Stock Adjustments
+      </h1>
 
-      <div className="bg-white rounded-lg shadow p-6">
 
-        <table className="w-full">
+      {/* Adjustment Form */}
 
-          <thead className="border-b">
-            <tr>
-              <th className="text-left p-2">Product</th>
-              <th className="text-left p-2">Old Stock</th>
-              <th className="text-left p-2">New Stock</th>
-              <th className="text-left p-2">Reason</th>
-            </tr>
-          </thead>
+      <div className="bg-white p-6 rounded shadow-md w-96 mb-6">
 
-          <tbody>
-            {adjustments.map((adj) => (
-              <tr key={adj.id} className="border-b">
+        <h2 className="text-xl font-semibold mb-4">
+          Adjust Stock
+        </h2>
 
-                <td className="p-2">{adj.product}</td>
-                <td className="p-2">{adj.oldStock}</td>
-                <td className="p-2">{adj.newStock}</td>
-                <td className="p-2">{adj.reason}</td>
+        <input
+          type="text"
+          name="product"
+          placeholder="Product"
+          value={formData.product}
+          onChange={handleChange}
+          className="border p-2 w-full mb-3"
+        />
 
-              </tr>
-            ))}
-          </tbody>
+        <input
+          type="number"
+          name="oldStock"
+          placeholder="Old Stock"
+          value={formData.oldStock}
+          onChange={handleChange}
+          className="border p-2 w-full mb-3"
+        />
 
-        </table>
+        <input
+          type="number"
+          name="newStock"
+          placeholder="New Stock"
+          value={formData.newStock}
+          onChange={handleChange}
+          className="border p-2 w-full mb-3"
+        />
+
+        <input
+          type="text"
+          name="reason"
+          placeholder="Reason"
+          value={formData.reason}
+          onChange={handleChange}
+          className="border p-2 w-full mb-4"
+        />
+
+        <button
+          onClick={addAdjustment}
+          className="bg-orange-600 text-white px-4 py-2 rounded"
+        >
+          Adjust Stock
+        </button>
 
       </div>
+
+
+      {/* Adjustment Table */}
+
+      <table className="w-full bg-white rounded shadow">
+
+        <thead className="bg-gray-200">
+          <tr>
+            <th className="p-3 text-left">Product</th>
+            <th className="p-3 text-left">Old Stock</th>
+            <th className="p-3 text-left">New Stock</th>
+            <th className="p-3 text-left">Reason</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          {adjustments.map((item) => (
+
+            <tr key={item.id} className="border-t">
+
+              <td className="p-3">{item.product}</td>
+              <td className="p-3">{item.oldStock}</td>
+              <td className="p-3">{item.newStock}</td>
+              <td className="p-3">{item.reason}</td>
+
+            </tr>
+
+          ))}
+
+        </tbody>
+
+      </table>
 
     </div>
   );
